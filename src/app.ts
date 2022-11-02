@@ -1,17 +1,17 @@
 import express from "express";
-
-import { Router, Request, Response } from "express";
+import { Response } from "express";
+import { adminRoutes } from "./routes/admin.routes";
+import { userRoutes } from "./routes/user.routes";
 
 const app = express();
 
-const route = Router();
-
 app.use(express.json());
 
-app.use(route);
+app.use(userRoutes);
+app.use(adminRoutes);
 
-route.get("/", async (req: Request, res: Response) => {
-  res.json({ message: "Ola" });
+app.get("/", async (__, res: Response) => {
+  res.json({ message: "Running" });
 });
 
 export { app };

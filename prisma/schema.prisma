@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,9 +8,65 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String
-  password String
-  admin    Boolean @default(false)
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  admin        Boolean       @default(false)
+  email        String        @unique
+  name         String
+  password     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Cart         Cart?
+  OrderDetails OrderDetails?
+}
+
+model Ticket {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  movie     String
+  quantity  Int
+  price     Float
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  CartItem  CartItem?
+  OrderItem OrderItem?
+}
+
+model Cart {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  total     Float
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @unique
+  CartItem  CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  quantity  Int
+  cart      Cart?    @relation(fields: [cartId], references: [id])
+  cartId    String?  @db.ObjectId
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  ticketId  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderDetails {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String      @unique
+  total     Float
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  ticket    Ticket        @relation(fields: [ticketId], references: [id])
+  ticketId  String        @unique
+  order     OrderDetails? @relation(fields: [orderId], references: [id])
+  orderId   String?       @db.ObjectId
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
