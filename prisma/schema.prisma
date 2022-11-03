@@ -8,33 +8,33 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  admin        Boolean       @default(false)
-  email        String        @unique
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  admin        Boolean        @default(false)
+  email        String         @unique
   name         String
   password     String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  Cart         Cart?
-  OrderDetails OrderDetails?
+  Cart         Cart[]
+  OrderDetails OrderDetails[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model Ticket {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
   movie     String
   quantity  Int
   price     Float
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  CartItem  CartItem?
-  OrderItem OrderItem?
+  CartItem  CartItem[]
+  OrderItem OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Cart {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
   total     Float
   user      User       @relation(fields: [userId], references: [id])
-  userId    String     @unique
+  userId    String
   CartItem  CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -42,11 +42,11 @@ model Cart {
 
 model CartItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  quantity  Int
+  quantity  Int      @default(1)
   cart      Cart?    @relation(fields: [cartId], references: [id])
   cartId    String?  @db.ObjectId
   ticket    Ticket   @relation(fields: [ticketId], references: [id])
-  ticketId  String   @unique
+  ticketId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -54,17 +54,17 @@ model CartItem {
 model OrderDetails {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
   user      User        @relation(fields: [userId], references: [id])
-  userId    String      @unique
+  userId    String
   total     Float
+  OrderItem OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  OrderItem OrderItem[]
 }
 
 model OrderItem {
   id        String        @id @default(auto()) @map("_id") @db.ObjectId
   ticket    Ticket        @relation(fields: [ticketId], references: [id])
-  ticketId  String        @unique
+  ticketId  String
   order     OrderDetails? @relation(fields: [orderId], references: [id])
   orderId   String?       @db.ObjectId
   createdAt DateTime      @default(now())
