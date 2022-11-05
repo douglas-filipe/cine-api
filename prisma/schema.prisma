@@ -43,8 +43,8 @@ model Cart {
 model CartItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   quantity  Int      @default(1)
-  cart      Cart?    @relation(fields: [cartId], references: [id])
-  cartId    String?  @db.ObjectId
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  cartId    String   @db.ObjectId
   ticket    Ticket   @relation(fields: [ticketId], references: [id])
   ticketId  String
   createdAt DateTime @default(now())

@@ -1,6 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { Request, Response } from "express";
-import { createUserService } from "../services/user.services";
+import { createUserService, loginUserService } from "../services/user.services";
+import { IResponseError } from "../types/responseError.types";
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
@@ -12,5 +13,20 @@ export const createUserController = async (req: Request, res: Response) => {
       return res.status(409).json({ message: "Email already exists" });
     }
     return res.status(400).json({ message: "Error creating account" });
+  }
+};
+
+export const loginUserController = async (req: Request, res: Response) => {
+  try {
+    const token = await loginUserService({
+      email: req.body.email,
+      password: req.body.password,
+    });
+
+    return res.json(token);
+  } catch (e) {
+    console.log(e);
+    const error = e as IResponseError;
+    return res.status(400).json({ message: error.message });
   }
 };

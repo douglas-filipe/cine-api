@@ -31,3 +31,7 @@ export const listAllUsersRepo = async () => {
     select: { id: true, email: true, admin: true, name: true },
   });
 };
+
+export const getUserByEmailRepo = (email: string) => {
+  return prisma.user.findFirst({ where: { email } });
+};

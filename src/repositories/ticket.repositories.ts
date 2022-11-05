@@ -19,7 +19,7 @@ export const listAllTicketsRepo = async (page: number) => {
     take: 10,
     skip: 10 * (page - 1),
     orderBy: { createdAt: "desc" },
-    where: { quantity: { gt: 1 } },
+    where: { quantity: { gt: 0 } },
   });
 
   return {
