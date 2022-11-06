@@ -1,16 +1,21 @@
 FROM node:alpine
 
-WORKDIR /usr/yourapplication-name
+# Create app directory
+WORKDIR /app
 
-COPY package.json .
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
+COPY prisma ./prisma/
 
-RUN npm install\
-    && npm install typescript -g
+# Install app dependencies
+RUN npm install
 
 COPY . .
 
-RUN tsc
+RUN npm run build
+
+RUN npx prisma generate
 
 EXPOSE 3000
 
-CMD ["node", "./dist/server.js"]
+CMD [ "npm", "start" ]
