@@ -1,14 +1,20 @@
 import {
   createUserRepo,
+  deleteUserRepo,
   getUserByEmailRepo,
-  IDataInput,
+  getUserByIdRepo,
+  updateUserRepo,
 } from "../repositories/user.repositories";
 import { ResponseError } from "../errors/response.error";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { ILoginRequest } from "../types/user.types";
+import {
+  IDataCreateUser,
+  IDataUpdateUser,
+  ILoginRequest,
+} from "../types/user.types";
+import jwt from "jsonwebtoken";
 
-export const createUserService = async (body: IDataInput) => {
+export const createUserService = async (body: IDataCreateUser) => {
   const { password } = body;
   body.password = bcrypt.hashSync(password, 10);
   const user = await createUserRepo(body);
@@ -33,4 +39,16 @@ export const loginUserService = async (data: ILoginRequest) => {
 
     return { token };
   }
+};
+
+export const updateUserService = (id: string, data: IDataUpdateUser) => {
+  return updateUserRepo(id, data);
+};
+
+export const deleteUserService = (id: string) => {
+  return deleteUserRepo(id);
+};
+
+export const getUserByIdService = (id: string) => {
+  return getUserByIdRepo(id);
 };

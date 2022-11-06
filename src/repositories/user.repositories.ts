@@ -1,13 +1,7 @@
 import { prisma } from "../services/prisma.service";
+import { IDataCreateUser, IDataUpdateUser } from "../types/user.types";
 
-export interface IDataInput {
-  email: string;
-  password: string;
-  admin?: boolean;
-  name: string;
-}
-
-export const createUserRepo = (data: IDataInput) => {
+export const createUserRepo = (data: IDataCreateUser) => {
   return prisma.user.create({
     data,
     select: { id: true, email: true, admin: true, name: true },
@@ -15,14 +9,23 @@ export const createUserRepo = (data: IDataInput) => {
 };
 
 export const getUserByIdRepo = (id: string) => {
-  return prisma.user.findUnique({ where: { id } });
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 };
 
 export const deleteUserRepo = (id: string) => {
   return prisma.user.delete({ where: { id } });
 };
 
-export const updateUserRepo = (id: string, data: IDataInput) => {
+export const updateUserRepo = (id: string, data: IDataUpdateUser) => {
   return prisma.user.update({ where: { id }, data });
 };
 
