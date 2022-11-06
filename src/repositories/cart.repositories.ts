@@ -120,3 +120,14 @@ export const findAllCartItemInCart = async (userId: string) => {
     _count: true,
   });
 };
+
+export const findCartByUserIdRepo = (userId: string) => {
+  return prisma.cart.findFirst({
+    where: { userId },
+    include: { CartItem: true },
+  });
+};
+
+export const deleteManyCartItemRepo = (cartId: string) => {
+  return prisma.cartItem.deleteMany({ where: { cartId } });
+};

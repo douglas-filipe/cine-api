@@ -21,7 +21,7 @@ app.use(cartRoutes);
 app.use(paymentRoutes);
 
 app.get("/", async (__, res: Response) => {
-  res.json({ message: "Running" });
+  res.json({ message: "Running app" });
 });
 
 export { app };

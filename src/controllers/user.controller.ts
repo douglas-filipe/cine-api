@@ -1,5 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { Request, Response } from "express";
+import { ResponseError } from "../errors/response.error";
 import { updateUserRepo } from "../repositories/user.repositories";
 import {
   createUserService,
@@ -45,6 +46,9 @@ export const updateUserController = async (req: Request, res: Response) => {
     if (error.code === "P2002") {
       return res.status(409).json({ message: "Email already exists" });
     }
+    if (error.code === "P2025") {
+      return res.status(404).json({ message: "User not found" });
+    }
     return res.status(400).json({ message: error.message });
   }
 };
@@ -54,7 +58,10 @@ export const deleteUserController = async (req: Request, res: Response) => {
     await deleteUserService(req.userId as string);
     return res.status(204).json();
   } catch (e) {
-    const error = e as IResponseError;
+    const error = e as PrismaClientKnownRequestError;
+    if (error.code === "P2025") {
+      return res.status(404).json({ message: "User not found" });
+    }
     return res.status(400).json({ message: error.message });
   }
 };
@@ -64,7 +71,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
     const user = await getUserByIdService(req.userId as string);
     return res.json(user);
   } catch (e) {
-    const error = e as IResponseError;
-    return res.status(400).json({ message: error.message });
+    const error = e as ResponseError;
+    return res.status(error.statusCode).json({ message: error.message });
   }
 };

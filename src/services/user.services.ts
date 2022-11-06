@@ -49,6 +49,10 @@ export const deleteUserService = (id: string) => {
   return deleteUserRepo(id);
 };
 
-export const getUserByIdService = (id: string) => {
-  return getUserByIdRepo(id);
+export const getUserByIdService = async (id: string) => {
+  const user = await getUserByIdRepo(id);
+  if (!user) {
+    throw new ResponseError("User not found", 404);
+  }
+  return user;
 };

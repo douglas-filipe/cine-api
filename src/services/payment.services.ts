@@ -1,18 +1,23 @@
 import { ResponseError } from "../errors/response.error";
+import {
+  deleteManyCartItemRepo,
+  findCartByUserIdRepo,
+  updateCartRepo,
+} from "../repositories/cart.repositories";
+import {
+  createManyOrderItemRepo,
+  createOrderRepo,
+} from "../repositories/order.repositories";
 import { prisma } from "./prisma.service";
 
 export const createPaymentService = async (userId: string) => {
-  const cart = await prisma.cart.findFirst({
-    where: { userId },
-    include: { CartItem: true },
-  });
+  const cart = await findCartByUserIdRepo(userId);
+
   if (!cart) {
     throw new ResponseError("Cart not found", 404);
   }
 
-  const orderDetails = await prisma.orderDetails.create({
-    data: { total: cart.total, userId: cart.userId },
-  });
+  const orderDetails = await createOrderRepo(cart.total, cart.userId);
 
   const cartMap = cart.CartItem.map((e) => {
     return {
@@ -22,7 +27,12 @@ export const createPaymentService = async (userId: string) => {
     };
   });
 
-  await prisma.orderItem.createMany({ data: cartMap });
+  await createManyOrderItemRepo(cartMap);
+
+  await updateCartRepo(cart.id, 0);
+
+  await deleteManyCartItemRepo(cart.id);
+
   return { message: "Payment made successfully" };
 };
 
