@@ -7,10 +7,9 @@ import { IResponseError } from "../types/responseError.types";
 
 export const createPaymentController = async (req: Request, res: Response) => {
   try {
-    const payment = await createPaymentService(req.userId as string);
+    const payment = await createPaymentService(req.body, req.userId as string);
     return res.status(201).json(payment);
   } catch (e) {
-    console.log(e);
     const error = e as IResponseError;
     return res.status(error.statusCode || 400).json({ message: error.message });
   }

@@ -124,7 +124,7 @@ export const findAllCartItemInCart = async (userId: string) => {
 export const findCartByUserIdRepo = (userId: string) => {
   return prisma.cart.findFirst({
     where: { userId },
-    include: { CartItem: true },
+    include: { CartItem: true, user: true },
   });
 };
 

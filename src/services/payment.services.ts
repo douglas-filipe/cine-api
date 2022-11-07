@@ -9,12 +9,25 @@ import {
   createOrderRepo,
 } from "../repositories/order.repositories";
 import { prisma } from "./prisma.service";
+import Stripe from "stripe";
+import { IDataPayment } from "../types/payment.types";
 
-export const createPaymentService = async (userId: string) => {
+const stripe = new Stripe(process.env.STRIPE_KEY as string, {
+  apiVersion: "2022-08-01",
+});
+
+export const createPaymentService = async (
+  data: IDataPayment,
+  userId: string
+) => {
   const cart = await findCartByUserIdRepo(userId);
 
   if (!cart) {
     throw new ResponseError("Cart not found", 404);
+  }
+
+  if (cart.CartItem.length === 0) {
+    throw new ResponseError("Cart empty", 400);
   }
 
   const orderDetails = await createOrderRepo(cart.total, cart.userId);
@@ -33,7 +46,29 @@ export const createPaymentService = async (userId: string) => {
 
   await deleteManyCartItemRepo(cart.id);
 
-  return { message: "Payment made successfully" };
+  const cardToken = await stripe.tokens.create({
+    card: {
+      name: data.name,
+      number: data.number,
+      exp_month: data.month,
+      exp_year: data.year,
+      cvc: data.cvc,
+    },
+  });
+
+  const charge = await stripe.charges.create({
+    amount: cart.total * 100,
+    currency: "brl",
+    source: cardToken.id,
+    receipt_email: cart.user.email,
+    description: data.description,
+  });
+
+  if (charge.status === "succeeded") {
+    return { message: "Payment made successfully" };
+  }
+
+  return { message: "Error payment" };
 };
 
 export const listPaymentsInUserService = async (userId: string) => {
