@@ -15,11 +15,12 @@ export const listAllTicketsRepo = async (page: number) => {
   });
 
   const totalPage = Math.ceil(totalCount._count / 10);
+  
   const tickets = await prisma.ticket.findMany({
     take: 10,
     skip: 10 * (page - 1),
     orderBy: { createdAt: "desc" },
-    where: { quantity: { gt: 1 } },
+    where: { quantity: { gt: 0 } },
   });
 
   return {

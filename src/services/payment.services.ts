@@ -5,12 +5,13 @@ import {
   updateCartRepo,
 } from "../repositories/cart.repositories";
 import {
+  ICartItems,
   createManyOrderItemRepo,
   createOrderRepo,
 } from "../repositories/order.repositories";
 import { prisma } from "./prisma.service";
 import Stripe from "stripe";
-import { IDataPayment } from "../types/payment.types";
+import {  IDataPayment } from "../types/payment.types";
 
 const stripe = new Stripe(process.env.STRIPE_KEY as string, {
   apiVersion: "2022-08-01",

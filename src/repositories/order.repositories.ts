@@ -1,6 +1,6 @@
 import { prisma } from "../services/prisma.service";
 
-interface ICartItems {
+export interface ICartItems {
   quantity: number;
   ticketId: string;
   orderId: string;
