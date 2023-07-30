@@ -69,7 +69,7 @@ $ STRIPE_KEY
 
 # Execute o seguinte comando:
 $ npx prisma generate
-$ npx prisma db pull
+$ npx prisma db push
 
 # Execute a aplicação em modo de desenvolvimento
 $ npm run dev
